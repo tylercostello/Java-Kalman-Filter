@@ -24,7 +24,7 @@ public class linecharttester extends ApplicationFrame {
    private DefaultCategoryDataset createDataset( ) {
       DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
       dataset.addValue( 1 , "y" , "1" );
-      dataset.addValue( 2 , "y" , "2" );
+      dataset.addValue( 2.25 , "y" , "2.35" );
       dataset.addValue( 3 , "y" ,  "3" );
       dataset.addValue( 4 , "y" , "4" );
       dataset.addValue( 5 , "y" , "5" );
@@ -35,7 +35,7 @@ public class linecharttester extends ApplicationFrame {
    public static void main( String[ ] args ) {
       linecharttester chart = new linecharttester(
          "Y Vs X" ,
-         "Y vs X");
+         "Y Vs X");
 
       chart.pack( );
      
