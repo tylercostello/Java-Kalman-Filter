@@ -31,14 +31,18 @@ public class LineTest3 extends ApplicationFrame {
     		  sampley2.add((double) i);
     	  }
       }
+      
+      XYSeriesCollection dataset = new XYSeriesCollection( );
+      dataset=addLine(dataset,samplex1,sampley1, "Line1");
+      dataset=addLine(dataset,samplex2,sampley2, "Line2");
       JFreeChart xylineChart = ChartFactory.createXYLineChart(
-         chartTitle ,
-         "X" ,
-         "Y" ,
-         createDataset(samplex1,sampley1,samplex2,sampley2) ,
-         PlotOrientation.VERTICAL ,
-         true , true , false);
-         
+    	         chartTitle ,
+    	         "X" ,
+    	         "Y" ,
+    	         dataset,
+    	         PlotOrientation.VERTICAL ,
+    	         true , true , false);
+      
       ChartPanel chartPanel = new ChartPanel( xylineChart );
       chartPanel.setPreferredSize( new java.awt.Dimension( 560 , 367 ) );
       final XYPlot plot = xylineChart.getXYPlot( );
@@ -53,27 +57,17 @@ public class LineTest3 extends ApplicationFrame {
       plot.setRenderer( renderer ); 
       setContentPane( chartPanel ); 
    }
-   /*
-   private XYDataset createDataset( ) {
-      final XYSeries Line1 = new XYSeries( "Line1" );          
-      Line1.add( 1.0 , 1.0 );          
-      Line1.add( 2.0 , 4.0 );          
-      Line1.add( 3.0 , 3.0 );          
-      
-      final XYSeries Line2 = new XYSeries( "Line2" );          
-      Line2.add( 1.0 , 4.0 );          
-      Line2.add( 2.0 , 5.0 );          
-      Line2.add( 3.0 , 6.0 );          
-      
-          
-      
-      final XYSeriesCollection dataset = new XYSeriesCollection( );          
-      dataset.addSeries( Line1 );          
-      dataset.addSeries( Line2 );          
 
-      return dataset;
+   private XYSeriesCollection addLine(XYSeriesCollection oldDataset,ArrayList<Double> xList1,ArrayList<Double> yList1, String lineName ){
+	  final XYSeries Line1 = new XYSeries( lineName );          
+      for (int i=0;i<xList1.size();i++){
+    	  Line1.add( xList1.get(i) , yList1.get(i));   
+      }
+      //final XYSeriesCollection dataset = new XYSeriesCollection( );          
+      oldDataset.addSeries( Line1 );  
+      return oldDataset;
    }
-	*/
+   /*
    private XYDataset createDataset(ArrayList<Double> xList1,ArrayList<Double> yList1,ArrayList<Double> xList2,ArrayList<Double> yList2  ) {
 	      final XYSeries Line1 = new XYSeries( "Line1" );          
 	      for (int i=0;i<xList1.size();i++){
@@ -93,6 +87,7 @@ public class LineTest3 extends ApplicationFrame {
 
 	      return dataset;
 	   }
+	   */
    public static void main( String[ ] args ) {
       LineTest3 chart = new LineTest3("XY",
          "XY");
