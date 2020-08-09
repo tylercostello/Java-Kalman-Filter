@@ -2,6 +2,22 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="C:/Users/tyc64/Downloads/jfreechart-1.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/jfreechart-1.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-cdense-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-cdense-0.39-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-core-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-core-0.39-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-ddense-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-ddense-0.39-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-dsparse-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-dsparse-0.39-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-experimental-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-experimental-0.39-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-fdense-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-fdense-0.39-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-simple-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-simple-0.39-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-zdense-0.39.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyc64/Documents/JARS/ejml-zdense-0.39-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

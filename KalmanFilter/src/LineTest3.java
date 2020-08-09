@@ -62,32 +62,11 @@ public class LineTest3 extends ApplicationFrame {
 	  final XYSeries Line1 = new XYSeries( lineName );          
       for (int i=0;i<xList1.size();i++){
     	  Line1.add( xList1.get(i) , yList1.get(i));   
-      }
-      //final XYSeriesCollection dataset = new XYSeriesCollection( );          
+      }      
       oldDataset.addSeries( Line1 );  
       return oldDataset;
    }
-   /*
-   private XYDataset createDataset(ArrayList<Double> xList1,ArrayList<Double> yList1,ArrayList<Double> xList2,ArrayList<Double> yList2  ) {
-	      final XYSeries Line1 = new XYSeries( "Line1" );          
-	      for (int i=0;i<xList1.size();i++){
-	    	  Line1.add( xList1.get(i) , yList1.get(i));   
-	      }
-	      
-	      final XYSeries Line2 = new XYSeries( "Line2" );          
-	      for (int i=0;i<xList2.size();i++){
-	    	  Line2.add( xList2.get(i) , yList2.get(i));   
-	      }         
-	      
-	          
-	      
-	      final XYSeriesCollection dataset = new XYSeriesCollection( );          
-	      dataset.addSeries( Line1 );          
-	      dataset.addSeries( Line2 );          
 
-	      return dataset;
-	   }
-	   */
    public static void main( String[ ] args ) {
       LineTest3 chart = new LineTest3("XY",
          "XY");
