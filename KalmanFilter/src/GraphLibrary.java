@@ -13,9 +13,9 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeriesCollection; 
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
-public class LineTest4 extends ApplicationFrame {
+public class GraphLibrary extends ApplicationFrame {
 
-   public LineTest4( String applicationTitle, String chartTitle, XYSeriesCollection dataset ) {
+   public GraphLibrary( String applicationTitle, String chartTitle, XYSeriesCollection dataset ) {
       super(applicationTitle);
 
       JFreeChart xylineChart = ChartFactory.createXYLineChart(
@@ -41,37 +41,12 @@ public class LineTest4 extends ApplicationFrame {
       setContentPane( chartPanel ); 
    }
 
-   private static XYSeriesCollection addLine(XYSeriesCollection oldDataset,ArrayList<Double> xList1,ArrayList<Double> yList1, String lineName ){
+   public static XYSeriesCollection addLine(XYSeriesCollection oldDataset,ArrayList<Double> xList1,ArrayList<Double> yList1, String lineName ){
 	  final XYSeries Line1 = new XYSeries( lineName );          
       for (int i=0;i<xList1.size();i++){
     	  Line1.add( xList1.get(i) , yList1.get(i));   
       }      
       oldDataset.addSeries( Line1 );  
       return oldDataset;
-   }
-
-   public static void main( String[ ] args ) {
-      ArrayList<Double> samplex1=new ArrayList<Double>();
-      ArrayList<Double> samplex2=new ArrayList<Double>();
-      ArrayList<Double> sampley1=new ArrayList<Double>();
-      ArrayList<Double> sampley2=new ArrayList<Double>();
-      for(int i=0; i<=20;i++){
-    	  samplex1.add((double) i);
-    	  sampley1.add((double) i);
-    	  if (i<=10){
-    		  samplex2.add((double) i);
-    	  }
-    	  if (i%2==0){
-    		  sampley2.add((double) i);
-    	  }
-      }
-      
-      XYSeriesCollection dataset = new XYSeriesCollection( );
-      dataset=addLine(dataset,samplex1,sampley1, "Line1");
-      dataset=addLine(dataset,samplex2,sampley2, "Line2");
-      LineTest4 chart = new LineTest4("XY",
-         "XY", dataset);
-      chart.pack( );                  
-      chart.setVisible( true ); 
    }
 }
