@@ -7,17 +7,18 @@ public class EKF {
 	public static SimpleMatrix x;
 	public static SimpleMatrix P;
 	public static SimpleMatrix Q;
+	public static SimpleMatrix H;
+	public static SimpleMatrix R;
+	public static SimpleMatrix I;
 	public final static int alvariance = 100;
 	public final static int arvariance = 100;
 
-	
 	public final static int b = 10;
 	public final static double dt = 0.01;
 	public final static double dt_2 = dt * dt;
 	public final static double dt_3 = dt_2 * dt;
 	public final static double dt_4 = dt_3 * dt;
-	
-	
+
 	private static ArrayList<Double> normalNoise(double mean, double stdev, ArrayList<Double> oldList) {
 		ArrayList<Double> newList = new ArrayList<Double>();
 
@@ -130,110 +131,197 @@ public class EKF {
 
 		x = new SimpleMatrix(5, 1, true,
 				new double[] { xTruth.get(0), yTruth.get(0), thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0) });
-		P = new SimpleMatrix(2, 3, true, new double[] { 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0.01, 0,
-				0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0.01 });
-		SimpleMatrix H = new SimpleMatrix(2, 3, true,
-				new double[] { 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0 });
-		SimpleMatrix I = SimpleMatrix.identity(5);
+		P = new SimpleMatrix(5, 5, true, new double[] { 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0,
+				0.01, 0, 0, 0, 0, 0, 0.01 });
+		H = new SimpleMatrix(3, 5, true, new double[] { 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0 });
+		I = SimpleMatrix.identity(5);
 
 		SimpleMatrix z_sensors = new SimpleMatrix(3, 1);
 
 		Q = new SimpleMatrix(5, 5);
 
-		SimpleMatrix R = SimpleMatrix.diag(0.25, 0.25, 0.25);
+		R = SimpleMatrix.diag(0.25, 0.25, 0.25);
 
+		ArrayList<Double> xList = new ArrayList<Double>();
+		xList.add(xTruth.get(0));
+		ArrayList<Double> yList = new ArrayList<Double>();
+		yList.add(yTruth.get(0));
+		ArrayList<Double> thetaList = new ArrayList<Double>();
+		thetaList.add(thetaTruth.get(0));
+		ArrayList<Double> vlList = new ArrayList<Double>();
+		vlList.add(vlTruth.get(0));
+		ArrayList<Double> vrList = new ArrayList<Double>();
+		vrList.add(vrTruth.get(0));
+
+		for (int counter = 1; counter < 1400; counter++) {
+			xList.add(x.get(0,0));
+			yList.add(x.get(1,0));
+			thetaList.add(x.get(2,0));
+			vlList.add(x.get(2,0));
+			vrList.add(x.get(2,0));
+			z_sensors.set(0,0,thetaNoisy.get(counter));
+			z_sensors.set(1,0, vlNoisy.get(counter));
+			z_sensors.set(2,0, vrNoisy.get(counter));
+			predict();
+			update(z_sensors);
+		}
 		
-
-
+		 XYSeriesCollection dataset = new XYSeriesCollection( );
+		 dataset=GraphLibrary.addLine(dataset,xList,yList, "Line1");
+		 dataset=GraphLibrary.addLine(dataset,xTruth,yTruth, "Line2");
+		 GraphLibrary chart = new GraphLibrary("XY", "XY", dataset);
+		 chart.pack( ); chart.setVisible( true );
+		 		
 
 	}
-	private static void predict(){
-		Q.set(2,0,0);
-		Q.set(2,1,0);
-		Q.set(2,2,(dt_4 * alvariance + dt_4 * arvariance) / (4 * b * b));
-		Q.set(2,3,(-dt_3 * alvariance) / (2 * b));
-		Q.set(2,4,(dt_3 * arvariance) / (2 * b));
-		
-		Q.set(3,0,0);
-		Q.set(3,1,0);
-		Q.set(3,2,(-dt_3 * alvariance) / (2 * b));
-		Q.set(3,3,dt_2 * alvariance);
-		Q.set(3,4,0);
-		
-		Q.set(4,0,0);
-		Q.set(4,1,0);
-		Q.set(4,2,(dt_3 * arvariance) / (2 * b));
-		Q.set(4,3,0);
-		Q.set(4,4, dt_2 * arvariance);
-		
+
+	private static void predict() {
+		Q.set(2, 0, 0);
+		Q.set(2, 1, 0);
+		Q.set(2, 2, (dt_4 * alvariance + dt_4 * arvariance) / (4 * b * b));
+		Q.set(2, 3, (-dt_3 * alvariance) / (2 * b));
+		Q.set(2, 4, (dt_3 * arvariance) / (2 * b));
+
+		Q.set(3, 0, 0);
+		Q.set(3, 1, 0);
+		Q.set(3, 2, (-dt_3 * alvariance) / (2 * b));
+		Q.set(3, 3, dt_2 * alvariance);
+		Q.set(3, 4, 0);
+
+		Q.set(4, 0, 0);
+		Q.set(4, 1, 0);
+		Q.set(4, 2, (dt_3 * arvariance) / (2 * b));
+		Q.set(4, 3, 0);
+		Q.set(4, 4, dt_2 * arvariance);
+
 		SimpleMatrix A = new SimpleMatrix(5, 5);
-		
-		if(x.get(3,0)==x.get(4,0)){
-			A.set(0,0,1);
-			A.set(0,0,0);
-			A.set(0,0,-x[3] * dt * np.sin(x[2]));
-			A.set(0,0, dt * np.cos(x[2]));
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
+
+		if (x.get(3, 0) == x.get(4, 0)) {
+			A.set(0, 0, 1);
+			A.set(0, 1, 0);
+			A.set(0, 2, -x.get(3, 0) * dt * Math.sin(x.get(2, 0)));
+			A.set(0, 3, dt * Math.cos(x.get(2, 0)));
+			A.set(0, 4, 0);
+
+			A.set(1, 0, 0);
+			A.set(1, 1, 1);
+			A.set(1, 2, dt * x.get(3, 0) * Math.cos(x.get(2, 0)));
+			A.set(1, 3, dt * Math.sin(x.get(2, 0)));
+			A.set(1, 4, 0);
+
+			A.set(2, 0, 0);
+			A.set(2, 0, 0);
+			A.set(2, 2, 1);
+			A.set(2, 3, 0);
+			A.set(2, 4, 0);
+
+			A.set(3, 0, 0);
+			A.set(3, 1, 0);
+			A.set(3, 2, 0);
+			A.set(3, 3, 1);
+			A.set(3, 4, 0);
+
+			A.set(4, 0, 0);
+			A.set(4, 1, 0);
+			A.set(4, 2, 0);
+			A.set(4, 3, 0);
+			A.set(4, 4, 1);
+		} else {
+			A.set(0, 0, 1);
+			A.set(0, 1, 0);
+			A.set(0, 2,
+					(b * (x.get(4, 0) + x.get(3, 0))
+							* (Math.cos(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b) - Math.cos(x.get(2, 0))))
+							/ (2 * (x.get(4, 0) - x.get(3, 0))));
+			A.set(0, 3,
+					(-x.get(4, 0) * x.get(4, 0) * dt * Math.cos(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b)
+							+ 2 * b * x.get(4, 0) * Math.sin(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b)
+							- 2 * b * x.get(4, 0) * Math.sin(x.get(2, 0))
+							+ x.get(3, 0) * x.get(3, 0) * dt
+									* Math.cos(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b))
+							/ (2 * (x.get(4, 0) - x.get(3, 0)) * (x.get(4, 0) - x.get(3, 0))));
+			A.set(0, 4, (2 * x.get(3, 0) * b * Math.sin(x.get(2, 0))
+					- 2 * x.get(3, 0) * b * Math.sin(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b)
+					+ x.get(4, 0) * x.get(4, 0) * dt * Math.cos(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b)
+					- x.get(3, 0) * x.get(3, 0) * dt * Math.cos(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b))
+					/ (2 * (x.get(4, 0) - x.get(3, 0)) * (x.get(4, 0) - x.get(3, 0))));
+
+			A.set(1, 0, 0);
+			A.set(1, 1, 1);
+			A.set(1, 2,
+					(b * (x.get(4, 0) + x.get(3, 0))
+							* (Math.sin(x.get(2, 0) + dt * (x.get(4, 0) - x.get(3, 0)) / b) - Math.sin(x.get(2, 0))))
+							/ (2 * (x.get(4, 0) - x.get(3, 0))));
+			A.set(1, 3,
+					(x.get(3, 0) * x.get(3, 0) * dt * Math.cos(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+							* Math.sin(x.get(2, 0))
+							+ x.get(3, 0) * x.get(3, 0) * dt * Math.sin(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.cos(x.get(2, 0))
+							+ 2 * b * x.get(4, 0) * Math.sin(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.sin(x.get(2, 0))
+							+ 2 * b * x.get(4, 0) * Math.cos(x.get(2, 0))
+							- x.get(4, 0) * x.get(4, 0) * dt * Math.cos(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.sin(x.get(2, 0))
+							- x.get(4, 0) * x.get(4, 0) * dt * Math.sin(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.cos(x.get(2, 0))
+							- 2 * b * x.get(4, 0) * Math.cos(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.cos(x.get(2, 0)))
+							/ (2 * (x.get(4, 0) - x.get(3, 0)) * (x.get(4, 0) - x.get(3, 0))));
+			A.set(1, 4,
+					(x.get(4, 0) * x.get(4, 0) * dt * Math.cos(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+							* Math.sin(x.get(2, 0))
+							+ x.get(4, 0) * x.get(4, 0) * dt * Math.sin(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.cos(x.get(2, 0))
+							+ 2 * b * x.get(3, 0) * Math.cos(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.cos(x.get(2, 0))
+							- x.get(3, 0) * x.get(3, 0) * dt * Math.cos(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.sin(x.get(2, 0))
+							- 2 * b * x.get(3, 0) * Math.sin(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.sin(x.get(2, 0))
+							- x.get(3, 0) * x.get(3, 0) * dt * Math.sin(dt * (x.get(4, 0) - x.get(3, 0)) / b)
+									* Math.cos(x.get(2, 0))
+							- 2 * b * x.get(3, 0) * Math.cos(x.get(2, 0)))
+							/ (2 * (x.get(4, 0) - x.get(3, 0)) * (x.get(4, 0) - x.get(3, 0))));
+
+			A.set(2, 0, 0);
+			A.set(2, 1, 0);
+			A.set(2, 2, 1);
+			A.set(2, 3, -dt / b);
+			A.set(2, 4, dt / b);
+
+			A.set(3, 0, 0);
+			A.set(3, 1, 0);
+			A.set(3, 2, 0);
+			A.set(3, 3, 1);
+			A.set(3, 4, 0);
+
+			A.set(4, 0, 0);
+			A.set(4, 1, 0);
+			A.set(4, 2, 0);
+			A.set(4, 3, 0);
+			A.set(4, 4, 1);
+
 		}
-		else{
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-			A.set(0,0,0);
-		}
-		
-		
-		
-		
+		x = aFunction(x, b, dt);
+		SimpleMatrix At = A.transpose();
+		//P.print();
+		//At.print();
+		//P = P.mult(At);
+		P = (A.mult(P.mult(At))).plus(Q);
+
+	}
+
+	private static void update(SimpleMatrix z) {
+		//H.print();
+		//x.print();
+		SimpleMatrix Y = z.minus(H.mult(x));
+		SimpleMatrix Ht = H.transpose();
+		SimpleMatrix S = (H.mult(P.mult(Ht))).plus(R);
+		SimpleMatrix K = P.mult(Ht);
+		SimpleMatrix Si = S.invert();
+		K = K.mult(Si);
+		x = x.plus(K.mult(Y));
+		P = (I.minus(K.mult(H))).mult(P);
 	}
 
 }
