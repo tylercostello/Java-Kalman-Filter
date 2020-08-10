@@ -29,6 +29,13 @@ public class EKF {
 		return newList;
 	}
 
+	private static boolean isClose(double in1, double in2) {
+		if (Math.abs(in1 - in2) <= 0.001) {
+			return true;
+		}
+		return false;
+	}
+
 	private static SimpleMatrix aFunction(SimpleMatrix xInput, int b, double dt) {
 		SimpleMatrix xOutput = new SimpleMatrix(5, 1);
 		double xNum = xInput.get(0, 0);
@@ -37,7 +44,7 @@ public class EKF {
 		double vl = xInput.get(3, 0);
 		double vr = xInput.get(4, 0);
 
-		if (vr == vl) {
+		if (isClose(vl, vr)) {
 			xNum = xNum + vl * Math.cos(theta) * dt;
 			y = y + vl * Math.sin(theta) * dt;
 			theta = theta;
@@ -75,20 +82,26 @@ public class EKF {
 		yTruth.add(y);
 		ArrayList<Double> thetaTruth = new ArrayList<Double>();
 		thetaTruth.add(theta);
+
 		ArrayList<Double> vrTruth = new ArrayList<Double>();
 		for (double i : t) {
 			vrTruth.add(20 * (Math.sin(i) + 10) - 100);
 		}
+		// for (int i = 0; i <= 1400; i++) {
+		// vrTruth.add((double) 110);
+		// }
+
 		ArrayList<Double> vlTruth = new ArrayList<Double>();
 		for (int i = 0; i <= 1400; i++) {
 			vlTruth.add((double) 110);
 		}
+
 		double vl = vlTruth.get(0);
 		double vr = vrTruth.get(0);
 
 		for (int counter = 1; counter < 1400; counter++) {
 
-			if (vl == vr) {
+			if (isClose(vl, vr)) {
 				xNum = xNum + vl * Math.cos(theta) * dt;
 				y = y + vl * Math.sin(theta) * dt;
 				theta = theta;
