@@ -12,13 +12,13 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.chart.plot.XYPlot; 
 import org.jfree.data.xy.XYSeriesCollection; 
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-
+import org.jfree.data.xy.XYSeries;  
 public class GraphLibrary extends ApplicationFrame {
 
    public GraphLibrary( String applicationTitle, String chartTitle, XYSeriesCollection dataset ) {
       super(applicationTitle);
 
-      JFreeChart xylineChart = ChartFactory.createXYLineChart(
+      JFreeChart xylineChart = ChartFactory.createScatterPlot(
     	         chartTitle ,
     	         "X" ,
     	         "Y" ,
@@ -30,6 +30,10 @@ public class GraphLibrary extends ApplicationFrame {
       chartPanel.setPreferredSize( new java.awt.Dimension( 560 , 367 ) );
       final XYPlot plot = xylineChart.getXYPlot( );
       
+      ChartPanel panel = new ChartPanel(xylineChart);  
+      setContentPane(panel);  
+      
+      /*
       XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
       renderer.setSeriesPaint( 0 , Color.RED );
       renderer.setSeriesPaint( 1 , Color.GREEN );
@@ -38,7 +42,7 @@ public class GraphLibrary extends ApplicationFrame {
       renderer.setSeriesStroke( 1 , new BasicStroke( 3.0f ) );
 
       plot.setRenderer( renderer ); 
-      setContentPane( chartPanel ); 
+      setContentPane( chartPanel ); */
    }
 
    public static XYSeriesCollection addLine(XYSeriesCollection oldDataset,ArrayList<Double> xList1,ArrayList<Double> yList1, String lineName ){
