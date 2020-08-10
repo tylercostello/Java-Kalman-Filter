@@ -10,8 +10,8 @@ public class EKF {
 	public static SimpleMatrix H;
 	public static SimpleMatrix R;
 	public static SimpleMatrix I;
-	public final static int alvariance = 100;
-	public final static int arvariance = 100;
+	public final static int alvariance = 10;
+	public final static int arvariance = 10;
 
 	public final static int b = 10;
 	public final static double dt = 0.01;
@@ -21,9 +21,9 @@ public class EKF {
 
 	private static ArrayList<Double> normalNoise(double mean, double stdev, ArrayList<Double> oldList) {
 		ArrayList<Double> newList = new ArrayList<Double>();
-
+		Random r = new Random();
+		r.setSeed(1);
 		for (int i = 0; i < oldList.size(); i++) {
-			Random r = new Random();
 			newList.add(oldList.get(i) + (r.nextGaussian() * stdev + mean));
 		}
 		return newList;
@@ -167,8 +167,8 @@ public class EKF {
 		}
 		
 		 XYSeriesCollection dataset = new XYSeriesCollection( );
-		 dataset=GraphLibrary.addLine(dataset,xList,yList, "Line1");
-		 dataset=GraphLibrary.addLine(dataset,xTruth,yTruth, "Line2");
+		 dataset=GraphLibrary.addLine(dataset,xList,yList, "Estimate");
+		 dataset=GraphLibrary.addLine(dataset,xTruth,yTruth, "Truth");
 		 GraphLibrary chart = new GraphLibrary("XY", "XY", dataset);
 		 chart.pack( ); chart.setVisible( true );
 		 		

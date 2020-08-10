@@ -1,4 +1,5 @@
 import java.awt.Color;
+
 import java.util.ArrayList;
 import java.awt.BasicStroke; 
 import org.jfree.chart.ChartPanel;
