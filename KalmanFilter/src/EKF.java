@@ -154,24 +154,24 @@ public class EKF {
 		vrList.add(vrTruth.get(0));
 
 		for (int counter = 1; counter < 1400; counter++) {
-			xList.add(x.get(0,0));
-			yList.add(x.get(1,0));
-			thetaList.add(x.get(2,0));
-			vlList.add(x.get(2,0));
-			vrList.add(x.get(2,0));
-			z_sensors.set(0,0,thetaNoisy.get(counter));
-			z_sensors.set(1,0, vlNoisy.get(counter));
-			z_sensors.set(2,0, vrNoisy.get(counter));
+			xList.add(x.get(0, 0));
+			yList.add(x.get(1, 0));
+			thetaList.add(x.get(2, 0));
+			vlList.add(x.get(2, 0));
+			vrList.add(x.get(2, 0));
+			z_sensors.set(0, 0, thetaNoisy.get(counter));
+			z_sensors.set(1, 0, vlNoisy.get(counter));
+			z_sensors.set(2, 0, vrNoisy.get(counter));
 			predict();
 			update(z_sensors);
 		}
-		
-		 XYSeriesCollection dataset = new XYSeriesCollection( );
-		 dataset=GraphLibrary.addLine(dataset,xList,yList, "Estimate");
-		 dataset=GraphLibrary.addLine(dataset,xTruth,yTruth, "Truth");
-		 GraphLibrary chart = new GraphLibrary("XY", "XY", dataset);
-		 chart.pack( ); chart.setVisible( true );
-		 		
+
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset = GraphLibrary.addLine(dataset, xList, yList, "Estimate");
+		dataset = GraphLibrary.addLine(dataset, xTruth, yTruth, "Truth");
+		GraphLibrary chart = new GraphLibrary("XY", "XY", dataset);
+		chart.pack();
+		chart.setVisible(true);
 
 	}
 
@@ -304,16 +304,16 @@ public class EKF {
 		}
 		x = aFunction(x, b, dt);
 		SimpleMatrix At = A.transpose();
-		//P.print();
-		//At.print();
-		//P = P.mult(At);
+		// P.print();
+		// At.print();
+		// P = P.mult(At);
 		P = (A.mult(P.mult(At))).plus(Q);
 
 	}
 
 	private static void update(SimpleMatrix z) {
-		//H.print();
-		//x.print();
+		// H.print();
+		// x.print();
 		SimpleMatrix Y = z.minus(H.mult(x));
 		SimpleMatrix Ht = H.transpose();
 		SimpleMatrix S = (H.mult(P.mult(Ht))).plus(R);
