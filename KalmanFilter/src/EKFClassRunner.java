@@ -38,7 +38,7 @@ public class EKFClassRunner {
 
 //		 ArrayList<Double> vrTruth = new ArrayList<Double>();
 //		 for (int i = 0; i <= 1400; i++) {
-//		 vrTruth.add((double) 75);
+//		 vrTruth.add((double) 110);
 //		 }
 
 		ArrayList<Double> vlTruth = new ArrayList<Double>();
@@ -105,7 +105,7 @@ public class EKFClassRunner {
 		vrList.add(vrTruth.get(0));
 		
 		
-		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 10, 10, 10,
+		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 100, 100, 10,
 				0.01);
 
 		for (int counter = 1; counter <= 1400; counter++) {
