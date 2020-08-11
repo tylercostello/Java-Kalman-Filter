@@ -232,16 +232,11 @@ public class EKFClass {
 		}
 		x = aFunction(x, b, dt);
 		SimpleMatrix At = A.transpose();
-		// P.print();
-		// At.print();
-		// P = P.mult(At);
 		P = (A.mult(P.mult(At))).plus(Q);
 
 	}
 
 	private void update(SimpleMatrix z) {
-		// H.print();
-		// x.print();
 		SimpleMatrix Y = z.minus(H.mult(x));
 		SimpleMatrix Ht = H.transpose();
 		SimpleMatrix S = (H.mult(P.mult(Ht))).plus(R);

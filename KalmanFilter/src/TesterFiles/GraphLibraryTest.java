@@ -1,7 +1,10 @@
+package TesterFiles;
 import java.util.ArrayList;
 import java.util.Random;
 
 import org.jfree.data.xy.XYSeriesCollection;
+
+import GraphLibrary;
 
 public class GraphLibraryTest {
 	private static ArrayList<Double> normalNoise(double mean, double stdev, ArrayList<Double> oldList){

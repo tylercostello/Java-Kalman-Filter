@@ -1,3 +1,4 @@
+package TesterFiles;
 
 public class isclosetester {
 	private static boolean isClose(double in1,double in2){

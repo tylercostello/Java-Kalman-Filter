@@ -1,3 +1,4 @@
+package TesterFiles;
 import java.awt.Color; 
 import java.awt.BasicStroke; 
 import org.jfree.chart.ChartPanel;
