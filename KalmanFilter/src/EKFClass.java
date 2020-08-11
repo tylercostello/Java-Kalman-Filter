@@ -3,41 +3,57 @@ import java.util.Random;
 import org.ejml.simple.SimpleMatrix;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class EKF {
-	public static SimpleMatrix x;
-	public static SimpleMatrix P;
-	public static SimpleMatrix Q;
-	public static SimpleMatrix H;
-	public static SimpleMatrix R;
-	public static SimpleMatrix I;
-	public final static int alvariance = 10;
-	public final static int arvariance = 10;
+public class EKFClass {
+	private SimpleMatrix x;
+	private SimpleMatrix P;
+	private SimpleMatrix Q;
+	private SimpleMatrix H;
+	private SimpleMatrix R;
+	private SimpleMatrix I;
+	private SimpleMatrix z_sensors;
+	private double alvariance;
+	private double arvariance;
 
-	public final static int b = 10;
-	public final static double dt = 0.01;
-	public final static double dt_2 = dt * dt;
-	public final static double dt_3 = dt_2 * dt;
-	public final static double dt_4 = dt_3 * dt;
+	private double b;
+	private double dt;
+	private double dt_2;
+	private double dt_3;
+	private double dt_4;
 
-	
-	private static ArrayList<Double> normalNoise(double mean, double stdev, ArrayList<Double> oldList) {
-		ArrayList<Double> newList = new ArrayList<Double>();
-		Random r = new Random();
-		r.setSeed(1);
-		for (int i = 0; i < oldList.size(); i++) {
-			newList.add(oldList.get(i) + (r.nextGaussian() * stdev + mean));
-		}
-		return newList;
+	public EKFClass(double xStart, double yStart, double thetaStart, double vlStart, double vrStart, double alvariance,
+			double arvariance, double b, double dt) {
+
+		this.alvariance = alvariance;
+		this.arvariance = arvariance;
+		this.b = b;
+		this.dt = dt;
+		this.dt_2 = dt * dt;
+		this.dt_3 = dt_2 * dt;
+		this.dt_4 = dt_3 * dt;
+
+		double prev_time = 0;
+
+		x = new SimpleMatrix(5, 1, true, new double[] { xStart, yStart, thetaStart, vlStart, vrStart });
+		P = new SimpleMatrix(5, 5, true, new double[] { 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0,
+				0.01, 0, 0, 0, 0, 0, 0.01 });
+		H = new SimpleMatrix(3, 5, true, new double[] { 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0 });
+		I = SimpleMatrix.identity(5);
+
+		z_sensors = new SimpleMatrix(3, 1);
+
+		Q = new SimpleMatrix(5, 5);
+
+		R = SimpleMatrix.diag(0.25, 0.25, 0.25);
 	}
 
-	private static boolean isClose(double in1, double in2) {
+	private boolean isClose(double in1, double in2) {
 		if (Math.abs(in1 - in2) <= 0.001) {
 			return true;
 		}
 		return false;
 	}
 
-	private static SimpleMatrix aFunction(SimpleMatrix xInput, int b, double dt) {
+	private SimpleMatrix aFunction(SimpleMatrix xInput, double b, double dt) {
 		SimpleMatrix xOutput = new SimpleMatrix(5, 1);
 		double xNum = xInput.get(0, 0);
 		double y = xInput.get(1, 0);
@@ -68,131 +84,26 @@ public class EKF {
 
 	}
 
-	public static void main(String[] args) {
-		ArrayList<Double> t = new ArrayList<Double>();
-		for (double i = 0; i <= 14.0; i = i + 0.01) {
-			t.add(i);
-		}
-		double xNum = 0;
-		double y = 0;
-		double theta = Math.PI / 2;
+	public double[] runFilter(double[] input) {
 
-		ArrayList<Double> xTruth = new ArrayList<Double>();
-		xTruth.add(xNum);
-		ArrayList<Double> yTruth = new ArrayList<Double>();
-		yTruth.add(y);
-		ArrayList<Double> thetaTruth = new ArrayList<Double>();
-		thetaTruth.add(theta);
+		z_sensors.set(0, 0, input[0]);
+		z_sensors.set(1, 0, input[1]);
+		z_sensors.set(2, 0, input[2]);
+		predict();
+		update(z_sensors);
 
-		ArrayList<Double> vrTruth = new ArrayList<Double>();
-		for (double i : t) {
-			vrTruth.add(20 * (Math.sin(i) + 10) - 100);
-		}
-//		ArrayList<Double> vrTruth = new ArrayList<Double>();
-//		for (int i = 0; i <= 1400; i++) {
-//			vrTruth.add((double) 75);
-//		}
+		double[] returnArray = new double[5];
+		returnArray[0] = x.get(0, 0);
+		returnArray[1] = x.get(1, 0);
+		returnArray[2] = x.get(2, 0);
+		returnArray[3] = x.get(3, 0);
+		returnArray[4] = x.get(4, 0);
 
-		ArrayList<Double> vlTruth = new ArrayList<Double>();
-		for (int i = 0; i <= 1400; i++) {
-			vlTruth.add((double) 110);
-		}
-
-		double vl = vlTruth.get(0);
-		double vr = vrTruth.get(0);
-
-		for (int counter = 1; counter <= 1400; counter++) {
-
-			if (isClose(vl, vr)) {
-				xNum = xNum + vl * Math.cos(theta) * dt;
-				y = y + vl * Math.sin(theta) * dt;
-				theta = theta;
-				xTruth.add(xNum);
-				yTruth.add(y);
-				thetaTruth.add(theta);
-				vl = vlTruth.get(counter);
-				vr = vrTruth.get(counter);
-
-			} else {
-				double w = (vr - vl) / b;
-				double r = (b / 2) * (vl + vr) / (vr - vl);
-				xNum = r * Math.sin(theta) * Math.cos(w * dt) + r * Math.cos(theta) * Math.sin(w * dt) + xNum
-						- r * Math.sin(theta);
-				y = r * Math.sin(theta) * Math.sin(w * dt) - r * Math.cos(theta) * Math.cos(w * dt) + y
-						+ r * Math.cos(theta);
-				theta = theta + w * dt;
-				xTruth.add(xNum);
-				yTruth.add(y);
-				thetaTruth.add(theta);
-				vl = vlTruth.get(counter);
-				vr = vrTruth.get(counter);
-			}
-
-		}
-
-		ArrayList<Double> vlNoisy = normalNoise(0, 0.5, vlTruth);
-		ArrayList<Double> vrNoisy = normalNoise(0, 0.5, vrTruth);
-		ArrayList<Double> thetaNoisy = normalNoise(0, 0.5, thetaTruth);
-
-		/*
-		 * XYSeriesCollection dataset = new XYSeriesCollection( );
-		 * dataset=GraphLibrary.addLine(dataset,t,vlTruth, "Line1");
-		 * dataset=GraphLibrary.addLine(dataset,t,vlNoisy, "Line2");
-		 * GraphLibrary chart = new GraphLibrary("XY", "XY", dataset);
-		 * chart.pack( ); chart.setVisible( true );
-		 */
-
-		double prev_time = 0;
-
-		x = new SimpleMatrix(5, 1, true,
-				new double[] { xTruth.get(0), yTruth.get(0), thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0) });
-		P = new SimpleMatrix(5, 5, true, new double[] { 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0,
-				0.01, 0, 0, 0, 0, 0, 0.01 });
-		H = new SimpleMatrix(3, 5, true, new double[] { 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0 });
-		I = SimpleMatrix.identity(5);
-
-		SimpleMatrix z_sensors = new SimpleMatrix(3, 1);
-
-		Q = new SimpleMatrix(5, 5);
-
-		R = SimpleMatrix.diag(0.25, 0.25, 0.25);
-
-		ArrayList<Double> xList = new ArrayList<Double>();
-		xList.add(xTruth.get(0));
-		ArrayList<Double> yList = new ArrayList<Double>();
-		yList.add(yTruth.get(0));
-		ArrayList<Double> thetaList = new ArrayList<Double>();
-		thetaList.add(thetaTruth.get(0));
-		ArrayList<Double> vlList = new ArrayList<Double>();
-		vlList.add(vlTruth.get(0));
-		ArrayList<Double> vrList = new ArrayList<Double>();
-		vrList.add(vrTruth.get(0));
-
-		for (int counter = 1; counter <= 1400; counter++) {
-
-			z_sensors.set(0, 0, thetaNoisy.get(counter));
-			z_sensors.set(1, 0, vlNoisy.get(counter));
-			z_sensors.set(2, 0, vrNoisy.get(counter));
-			predict();
-			update(z_sensors);
-			xList.add(x.get(0, 0));
-			yList.add(x.get(1, 0));
-			thetaList.add(x.get(2, 0));
-			vlList.add(x.get(2, 0));
-			vrList.add(x.get(2, 0));
-		}
-
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		//dataset = GraphLibrary.addLine(dataset, t, thetaTruth, "Estimate");
-		dataset = GraphLibrary.addLine(dataset, xList, yList, "Estimate");
-		dataset = GraphLibrary.addLine(dataset, xTruth, yTruth, "Truth");
-		GraphLibrary chart = new GraphLibrary("XY", "XY", dataset);
-		chart.pack();
-		chart.setVisible(true);
+		return returnArray;
 
 	}
 
-	private static void predict() {
+	private void predict() {
 		Q.set(2, 0, 0);
 		Q.set(2, 1, 0);
 		Q.set(2, 2, (dt_4 * alvariance + dt_4 * arvariance) / (4 * b * b));
@@ -328,7 +239,7 @@ public class EKF {
 
 	}
 
-	private static void update(SimpleMatrix z) {
+	private void update(SimpleMatrix z) {
 		// H.print();
 		// x.print();
 		SimpleMatrix Y = z.minus(H.mult(x));
