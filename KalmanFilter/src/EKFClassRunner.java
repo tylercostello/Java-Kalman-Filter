@@ -8,7 +8,7 @@ public class EKFClassRunner {
 	private static ArrayList<Double> normalNoise(double mean, double stdev, ArrayList<Double> oldList) {
 		ArrayList<Double> newList = new ArrayList<Double>();
 		Random r = new Random();
-		r.setSeed(1);
+		//r.setSeed(1);
 		for (int i = 0; i < oldList.size(); i++) {
 			newList.add(oldList.get(i) + (r.nextGaussian() * stdev + mean));
 		}
@@ -35,16 +35,21 @@ public class EKFClassRunner {
 		for (double i : t) {
 			vrTruth.add(20 * (Math.sin(i) + 10) - 100);
 		}
+		
+		ArrayList<Double> vlTruth = new ArrayList<Double>();
+		for (double i : t) {
+			vlTruth.add(10*i);
+		}
 
 //		 ArrayList<Double> vrTruth = new ArrayList<Double>();
 //		 for (int i = 0; i <= 1400; i++) {
 //		 vrTruth.add((double) 110);
 //		 }
 
-		ArrayList<Double> vlTruth = new ArrayList<Double>();
-		for (int i = 0; i <= 1400; i++) {
-			vlTruth.add((double) 110);
-		}
+//		ArrayList<Double> vlTruth = new ArrayList<Double>();
+//		for (int i = 0; i <= 1400; i++) {
+//			vlTruth.add((double) 110);
+//		}
 
 		double vl = vlTruth.get(0);
 		double vr = vrTruth.get(0);
