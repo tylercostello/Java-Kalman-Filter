@@ -8,7 +8,7 @@ public class EKFClassRunner {
 	private static ArrayList<Double> normalNoise(double mean, double stdev, ArrayList<Double> oldList) {
 		ArrayList<Double> newList = new ArrayList<Double>();
 		Random r = new Random();
-		//r.setSeed(1);
+		r.setSeed(1);
 		for (int i = 0; i < oldList.size(); i++) {
 			newList.add(oldList.get(i) + (r.nextGaussian() * stdev + mean));
 		}
@@ -111,7 +111,7 @@ public class EKFClassRunner {
 		
 		
 		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 100, 100, 10,
-				0.01);
+				0.01, 0.25, 0.25, 0.25);
 
 		for (int counter = 1; counter <= 1400; counter++) {
 

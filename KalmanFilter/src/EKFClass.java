@@ -21,7 +21,7 @@ public class EKFClass {
 	private double dt_4;
 
 	public EKFClass(double xStart, double yStart, double thetaStart, double vlStart, double vrStart, double alvariance,
-			double arvariance, double b, double dt) {
+			double arvariance, double b, double dt, double r1, double r2, double r3) {
 
 		this.alvariance = alvariance;
 		this.arvariance = arvariance;
@@ -43,7 +43,7 @@ public class EKFClass {
 
 		Q = new SimpleMatrix(5, 5);
 
-		R = SimpleMatrix.diag(0.25, 0.25, 0.25);
+		R = SimpleMatrix.diag(r1, r2, r3);
 	}
 
 	private boolean isClose(double in1, double in2) {
