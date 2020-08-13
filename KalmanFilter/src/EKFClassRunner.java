@@ -35,41 +35,41 @@ public class EKFClassRunner {
 		for (double i : t) {
 			vrTruth.add(20 * (Math.sin(i) + 10) - 100);
 		}
-		
+
 		ArrayList<Double> vlTruth = new ArrayList<Double>();
 		for (double i : t) {
-			vlTruth.add(10*i);
+			vlTruth.add(10 * i);
 		}
 
-//		 ArrayList<Double> vrTruth = new ArrayList<Double>();
-//		 for (int i = 0; i <= 1400; i++) {
-//		 vrTruth.add((double) 110);
-//		 }
+		// ArrayList<Double> vrTruth = new ArrayList<Double>();
+		// for (int i = 0; i <= 1400; i++) {
+		// vrTruth.add((double) 110);
+		// }
 
-//		ArrayList<Double> vlTruth = new ArrayList<Double>();
-//		for (int i = 0; i <= 1400; i++) {
-//			vlTruth.add((double) 110);
-//		}
+		// ArrayList<Double> vlTruth = new ArrayList<Double>();
+		// for (int i = 0; i <= 1400; i++) {
+		// vlTruth.add((double) 110);
+		// }
 
 		double vl = vlTruth.get(0);
 		double vr = vrTruth.get(0);
 
 		double xStart = 0;
 		double yStart = 0;
-		
+
 		ArrayList<Double> xTruth = new ArrayList<Double>();
 		ArrayList<Double> yTruth = new ArrayList<Double>();
 		ArrayList<Double> thetaTruth = new ArrayList<Double>();
 		xTruth.add(xStart);
 		yTruth.add(yStart);
 		thetaTruth.add(theta);
-		double xNum=xStart;
-		double yNum=yStart;
+		double xNum = xStart;
+		double yNum = yStart;
 		double vlNum;
 		double vrNum;
 		for (int counter = 1; counter <= 1400; counter++) {
-			vlNum=vlTruth.get(counter);
-			vrNum=vrTruth.get(counter);
+			vlNum = vlTruth.get(counter);
+			vrNum = vrTruth.get(counter);
 			if (isClose(vlNum, vrNum)) {
 				xNum = xNum + vlNum * Math.cos(theta) * 0.01;
 				yNum = yNum + vlNum * Math.sin(theta) * 0.01;
@@ -96,8 +96,9 @@ public class EKFClassRunner {
 		ArrayList<Double> vrNoisy = normalNoise(0, 0.5, vrTruth);
 		ArrayList<Double> thetaNoisy = normalNoise(0, 0.5, thetaTruth);
 
-//                   This is the code we would have running where sensor inputs are collected on the actual robot
-//-----------------------------------------------------------
+		// This is the code we would have running where sensor inputs are
+		// collected on the actual robot
+		// -----------------------------------------------------------
 		ArrayList<Double> xList = new ArrayList<Double>();
 		xList.add(xStart);
 		ArrayList<Double> yList = new ArrayList<Double>();
@@ -108,8 +109,7 @@ public class EKFClassRunner {
 		vlList.add(vlTruth.get(0));
 		ArrayList<Double> vrList = new ArrayList<Double>();
 		vrList.add(vrTruth.get(0));
-		
-		
+
 		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 100, 100, 10,
 				0.01, 0.25, 0.25, 0.25);
 
@@ -128,10 +128,8 @@ public class EKFClassRunner {
 
 		}
 
-		
-//-------------------------------------------------------------------
-		
-		
+		// -------------------------------------------------------------------
+
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset = GraphLibrary.addLine(dataset, xList, yList, "Estimate");
 		dataset = GraphLibrary.addLine(dataset, xTruth, yTruth, "Truth");
