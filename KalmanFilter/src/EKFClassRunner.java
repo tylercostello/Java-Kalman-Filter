@@ -105,7 +105,7 @@ public class EKFClassRunner {
 		ArrayList<Double> vrList = new ArrayList<Double>();
 		vrList.add(vrTruth.get(0));
 
-		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 10, 10, 10,
+		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 100, 100, 10,
 				0.01, 0.25, 0.25, 0.25);
 
 		for (int counter = 1; counter <= 1400; counter++) {
@@ -130,8 +130,8 @@ public class EKFClassRunner {
 		// handles graphing
 
 		XYSeriesCollection dataset = new XYSeriesCollection();
-		// dataset = GraphLibrary.addLine(dataset, t, vrList, "Estimate");
-		// dataset = GraphLibrary.addLine(dataset, t, vrNoisy, "Noisy Input");
+//		dataset = GraphLibrary.addLine(dataset, t, vrList, "Estimate");
+//		dataset = GraphLibrary.addLine(dataset, t, vrNoisy, "Noisy Input");
 		dataset = GraphLibrary.addLine(dataset, xList, yList, "Estimate");
 		dataset = GraphLibrary.addLine(dataset, xTruth, yTruth, "Truth");
 
