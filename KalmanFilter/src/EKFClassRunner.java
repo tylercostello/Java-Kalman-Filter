@@ -5,6 +5,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 public class EKFClassRunner {
 
+	// noise generating function
 	private static ArrayList<Double> normalNoise(double mean, double stdev, ArrayList<Double> oldList) {
 		ArrayList<Double> newList = new ArrayList<Double>();
 		Random r = new Random();
@@ -31,31 +32,25 @@ public class EKFClassRunner {
 
 		double theta = Math.PI / 2;
 
+		// generates vl and vr truth
+
 		ArrayList<Double> vrTruth = new ArrayList<Double>();
 		for (double i : t) {
 			vrTruth.add(20 * (Math.sin(i) + 10) - 100);
 		}
 
 		ArrayList<Double> vlTruth = new ArrayList<Double>();
-		for (double i : t) {
-			vlTruth.add(10 * i);
+		for (int i = 0; i <= 1400; i++) {
+			vlTruth.add((double) 110);
 		}
-
-		// ArrayList<Double> vrTruth = new ArrayList<Double>();
-		// for (int i = 0; i <= 1400; i++) {
-		// vrTruth.add((double) 110);
-		// }
-
-		// ArrayList<Double> vlTruth = new ArrayList<Double>();
-		// for (int i = 0; i <= 1400; i++) {
-		// vlTruth.add((double) 110);
-		// }
 
 		double vl = vlTruth.get(0);
 		double vr = vrTruth.get(0);
 
 		double xStart = 0;
 		double yStart = 0;
+
+		// generates xTruth, yTruth, and thetaTruth
 
 		ArrayList<Double> xTruth = new ArrayList<Double>();
 		ArrayList<Double> yTruth = new ArrayList<Double>();
@@ -110,7 +105,7 @@ public class EKFClassRunner {
 		ArrayList<Double> vrList = new ArrayList<Double>();
 		vrList.add(vrTruth.get(0));
 
-		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 100, 100, 10,
+		EKFClass myEKF = new EKFClass(xStart, yStart, thetaTruth.get(0), vlTruth.get(0), vrTruth.get(0), 10, 10, 10,
 				0.01, 0.25, 0.25, 0.25);
 
 		for (int counter = 1; counter <= 1400; counter++) {
@@ -119,7 +114,10 @@ public class EKFClassRunner {
 			inputArray[0] = thetaNoisy.get(counter);
 			inputArray[1] = vlNoisy.get(counter);
 			inputArray[2] = vrNoisy.get(counter);
+
+			// where EKF is ran
 			double[] outputArray = myEKF.runFilter(inputArray);
+
 			xList.add(outputArray[0]);
 			yList.add(outputArray[1]);
 			thetaList.add(outputArray[2]);
@@ -129,8 +127,11 @@ public class EKFClassRunner {
 		}
 
 		// -------------------------------------------------------------------
+		// handles graphing
 
 		XYSeriesCollection dataset = new XYSeriesCollection();
+		// dataset = GraphLibrary.addLine(dataset, t, vrList, "Estimate");
+		// dataset = GraphLibrary.addLine(dataset, t, vrNoisy, "Noisy Input");
 		dataset = GraphLibrary.addLine(dataset, xList, yList, "Estimate");
 		dataset = GraphLibrary.addLine(dataset, xTruth, yTruth, "Truth");
 

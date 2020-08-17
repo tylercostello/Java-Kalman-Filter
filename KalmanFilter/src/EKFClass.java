@@ -20,6 +20,9 @@ public class EKFClass {
 	private double dt_3;
 	private double dt_4;
 
+	// class constructor
+	// start positions, acceleration variances, width, time since last check,
+	// sensor variances
 	public EKFClass(double xStart, double yStart, double thetaStart, double vlStart, double vrStart, double alvariance,
 			double arvariance, double b, double dt, double r1, double r2, double r3) {
 
@@ -34,18 +37,21 @@ public class EKFClass {
 		double prev_time = 0;
 
 		x = new SimpleMatrix(5, 1, true, new double[] { xStart, yStart, thetaStart, vlStart, vrStart });
-		P = new SimpleMatrix(5, 5, true, new double[] { 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0,
-				0.01, 0, 0, 0, 0, 0, 0.01 });
+		// Because we are giving it the correct starting values since it's an
+		// EKF which requires them, we are very confident in the values
+		P = SimpleMatrix.diag(0.01, 0.01, 0.01, 0.01, 0.01);
+		// Chops off x and y coordinates because we can't measure those
 		H = new SimpleMatrix(3, 5, true, new double[] { 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 1.0 });
 		I = SimpleMatrix.identity(5);
 
 		z_sensors = new SimpleMatrix(3, 1);
 
 		Q = new SimpleMatrix(5, 5);
-
+		// Sensor variances
 		R = SimpleMatrix.diag(r1, r2, r3);
 	}
 
+	// checks to see if 2 variables are close
 	private boolean isClose(double in1, double in2) {
 		if (Math.abs(in1 - in2) <= 0.001) {
 			return true;
@@ -53,6 +59,7 @@ public class EKFClass {
 		return false;
 	}
 
+	// the function for calculating new position
 	private SimpleMatrix aFunction(SimpleMatrix xInput, double b, double dt) {
 		SimpleMatrix xOutput = new SimpleMatrix(5, 1);
 		double xNum = xInput.get(0, 0);
@@ -84,6 +91,7 @@ public class EKFClass {
 
 	}
 
+	// main loop
 	public double[] runFilter(double[] input) {
 
 		z_sensors.set(0, 0, input[0]);
@@ -103,7 +111,9 @@ public class EKFClass {
 
 	}
 
+	// predict step
 	private void predict() {
+		// sets q matrix
 		Q.set(2, 0, 0);
 		Q.set(2, 1, 0);
 		Q.set(2, 2, (dt_4 * alvariance + dt_4 * arvariance) / (4 * b * b));
@@ -124,7 +134,8 @@ public class EKFClass {
 
 		SimpleMatrix A = new SimpleMatrix(5, 5);
 
-		if (x.get(3, 0) == x.get(4, 0)) {
+		// set a matrix depending on if the velocities are close
+		if (isClose(x.get(3, 0), x.get(4, 0))) {
 			A.set(0, 0, 1);
 			A.set(0, 1, 0);
 			A.set(0, 2, -x.get(3, 0) * dt * Math.sin(x.get(2, 0)));
@@ -236,6 +247,7 @@ public class EKFClass {
 
 	}
 
+	// update loop
 	private void update(SimpleMatrix z) {
 		SimpleMatrix Y = z.minus(H.mult(x));
 		SimpleMatrix Ht = H.transpose();
