@@ -30,16 +30,6 @@ public class GraphLibrary extends ApplicationFrame {
 		ChartPanel panel = new ChartPanel(xylineChart);
 		setContentPane(panel);
 
-		/*
-		 * XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-		 * renderer.setSeriesPaint( 0 , Color.RED ); renderer.setSeriesPaint( 1
-		 * , Color.GREEN );
-		 * 
-		 * renderer.setSeriesStroke( 0 , new BasicStroke( 4.0f ) );
-		 * renderer.setSeriesStroke( 1 , new BasicStroke( 3.0f ) );
-		 * 
-		 * plot.setRenderer( renderer ); setContentPane( chartPanel );
-		 */
 	}
 
 	public static XYSeriesCollection addLine(XYSeriesCollection oldDataset, ArrayList<Double> xList1,
