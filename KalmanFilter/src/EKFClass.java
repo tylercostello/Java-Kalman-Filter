@@ -68,6 +68,7 @@ public class EKFClass {
 		double vl = xInput.get(3, 0);
 		double vr = xInput.get(4, 0);
 
+		//special case to check if vl and vr are about the same, because then r would go to infinity
 		if (isClose(vl, vr)) {
 			xNum = xNum + vl * Math.cos(theta) * dt;
 			y = y + vl * Math.sin(theta) * dt;

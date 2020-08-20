@@ -39,6 +39,11 @@ public class EKFClassRunner {
 			vrTruth.add(20 * (Math.sin(i) + 10) - 100);
 		}
 
+//		ArrayList<Double> vrTruth = new ArrayList<Double>();
+//		for (int i = 0; i <= 1400; i++) {
+//			vrTruth.add((double) 110);
+//		}
+		
 		ArrayList<Double> vlTruth = new ArrayList<Double>();
 		for (int i = 0; i <= 1400; i++) {
 			vlTruth.add((double) 110);
@@ -130,6 +135,7 @@ public class EKFClassRunner {
 		// handles graphing
 
 		XYSeriesCollection dataset = new XYSeriesCollection();
+//		dataset = GraphLibrary.addLine(dataset, t, vrTruth, "Truth");
 //		dataset = GraphLibrary.addLine(dataset, t, vrList, "Estimate");
 //		dataset = GraphLibrary.addLine(dataset, t, vrNoisy, "Noisy Input");
 		dataset = GraphLibrary.addLine(dataset, xList, yList, "Estimate");
