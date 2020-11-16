@@ -98,6 +98,10 @@ public class EKFClass {
 		z_sensors.set(0, 0, input[0]);
 		z_sensors.set(1, 0, input[1]);
 		z_sensors.set(2, 0, input[2]);
+		this.dt = input[3];
+		this.dt_2 = dt * dt;
+		this.dt_3 = dt_2 * dt;
+		this.dt_4 = dt_3 * dt;
 		predict();
 		update(z_sensors);
 

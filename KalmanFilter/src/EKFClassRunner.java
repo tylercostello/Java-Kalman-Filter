@@ -115,11 +115,11 @@ public class EKFClassRunner {
 
 		for (int counter = 1; counter <= 1400; counter++) {
 
-			double[] inputArray = new double[3];
+			double[] inputArray = new double[4];
 			inputArray[0] = thetaNoisy.get(counter);
 			inputArray[1] = vlNoisy.get(counter);
 			inputArray[2] = vrNoisy.get(counter);
-
+			inputArray[3] = 0.01;
 			// where EKF is ran
 			double[] outputArray = myEKF.runFilter(inputArray);
 
