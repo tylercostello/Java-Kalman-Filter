@@ -136,8 +136,8 @@ public class EKFClassRunner {
 
 		XYSeriesCollection dataset = new XYSeriesCollection();
 //		dataset = GraphLibrary.addLine(dataset, t, vrTruth, "Truth");
-//		dataset = GraphLibrary.addLine(dataset, t, vrList, "Estimate");
-//		dataset = GraphLibrary.addLine(dataset, t, vrNoisy, "Noisy Input");
+		//dataset = GraphLibrary.addLine(dataset, t, vrList, "Estimate");
+		//dataset = GraphLibrary.addLine(dataset, t, vrNoisy, "Noisy Input");
 		dataset = GraphLibrary.addLine(dataset, xList, yList, "Estimate");
 		dataset = GraphLibrary.addLine(dataset, xTruth, yTruth, "Truth");
 

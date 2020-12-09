@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 import org.ejml.simple.SimpleMatrix;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -119,6 +118,7 @@ public class EKFClass {
 	// predict step
 	private void predict() {
 		// sets q matrix
+		x = aFunction(x, b, dt);
 		Q.set(2, 0, 0);
 		Q.set(2, 1, 0);
 		Q.set(2, 2, (dt_4 * alvariance + dt_4 * arvariance) / (4 * b * b));
@@ -246,7 +246,7 @@ public class EKFClass {
 			A.set(4, 4, 1);
 
 		}
-		x = aFunction(x, b, dt);
+		
 		SimpleMatrix At = A.transpose();
 		P = (A.mult(P.mult(At))).plus(Q);
 
